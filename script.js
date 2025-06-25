@@ -1,5 +1,5 @@
 const GOOGLE_APPS_SCRIPT_URL =
-	"https://script.google.com/macros/s/AKfycbxLvFFjof42HO3Ai8oAx5RwgMDCKmT4zX_3FwMk7F1T1lMPvLeLAdrlB73mA9X9Q1o/exec";
+	"https://script.google.com/macros/s/AKfycbzfvfhMBEcbYLH8gFsTsklq3Gn7n3amB4leDyUZ8P-NFKzuhVrJ81X2ZGBoOQPsVrt7/exec";
 
 const COLORS = {
 	primary: "#6366f1",
