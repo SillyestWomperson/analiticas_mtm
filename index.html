@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Analytics IA - Dashboard Educacional</title>
+		<script src="chart.js"></script>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+			integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div class="dashboard">
+			<aside class="sidebar" id="sidebar">
+				<div class="sidebar-header">
+					<div class="logo">
+						<i class="fas fa-brain"></i>
+						<span>Womp</span>
+					</div>
+				</div>
+				<nav class="sidebar-nav">
+					<a href="#overview-section" class="nav-item active">
+						<i class="fas fa-chart-pie"></i>
+						<span>Visão Geral</span>
+					</a>
+					<a href="#charts-section" class="nav-item">
+						<i class="fas fa-calculator"></i>
+						<span>Análise de Escalas</span>
+					</a>
+					<a href="#tools-section" class="nav-item">
+						<i class="fas fa-tools"></i>
+						<span>Ferramentas</span>
+					</a>
+					<a href="#insights-section" class="nav-item">
+						<i class="fas fa-lightbulb"></i>
+						<span>Insights</span>
+					</a>
+					<a href="#timeline-section" class="nav-item">
+						<i class="fas fa-calendar-alt"></i>
+						<span>Timeline</span>
+					</a>
+					<a href="#table-section" class="nav-item">
+						<i class="fas fa-table"></i>
+						<span>Dados Brutos</span>
+					</a>
+				</nav>
+			</aside>
+
+			<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+			<main class="main-content" id="mainContent">
+				<header class="header">
+					<div class="header-left">
+						<h1><i class="fas fa-robot"></i> Uso de IA na Escola</h1>
+						<p>Análise completa dos dados coletados sobre o uso de IA na escola</p>
+					</div>
+					<div class="header-right">
+						<div class="refresh-btn" onclick="fetchData()">
+							<i class="fas fa-sync-alt"></i>
+							<span>Atualizar</span>
+						</div>
+					</div>
+				</header>
+
+				<div id="loading" class="loading-container">
+					<div class="loading-spinner">
+						<i class="fas fa-cog fa-spin"></i>
+					</div>
+					<p>Carregando dados...</p>
+				</div>
+
+				<div id="content" class="content" style="display: none">
+					<section class="stats-section" id="overview-section">
+						<div class="section-header">
+							<h2><i class="fas fa-chart-pie"></i> Visão Geral</h2>
+						</div>
+						<div class="stats-grid" id="statsGrid"></div>
+					</section>
+
+					<section class="charts-section" id="charts-section">
+						<div class="section-header">
+							<h2><i class="fas fa-chart-bar"></i> Análise por Questões de Escala</h2>
+						</div>
+						<div class="charts-grid">
+							<div class="chart-card">
+								<div class="chart-header">
+									<h3><i class="fas fa-question-circle"></i> Conhecimento sobre IA</h3>
+									<div class="chart-stats" id="stats1"></div>
+								</div>
+								<div class="chart-container">
+									<canvas id="chart1"></canvas>
+								</div>
+							</div>
+
+							<div class="chart-card">
+								<div class="chart-header">
+									<h3><i class="fas fa-clock"></i> Frequência de Uso</h3>
+									<div class="chart-stats" id="stats2"></div>
+								</div>
+								<div class="chart-container">
+									<canvas id="chart2"></canvas>
+								</div>
+							</div>
+
+							<div class="chart-card">
+								<div class="chart-header">
+									<h3><i class="fas fa-hourglass-half"></i> Horas por Semana</h3>
+									<div class="chart-stats" id="stats3"></div>
+								</div>
+								<div class="chart-container">
+									<canvas id="chart3"></canvas>
+								</div>
+							</div>
+
+							<div class="chart-card">
+								<div class="chart-header">
+									<h3><i class="fas fa-thumbs-up"></i> Confiança na IA</h3>
+									<div class="chart-stats" id="stats4"></div>
+								</div>
+								<div class="chart-container">
+									<canvas id="chart4"></canvas>
+								</div>
+							</div>
+						</div>
+					</section>
+
+					<section class="tools-section" id="tools-section">
+						<div class="section-header">
+							<h2><i class="fas fa-wrench"></i> Análise de Ferramentas</h2>
+						</div>
+						<div class="tools-grid">
+							<div class="chart-card large">
+								<div class="chart-header">
+									<h3><i class="fas fa-robot"></i> Ferramentas Mais Utilizadas</h3>
+								</div>
+								<div class="chart-container large">
+									<canvas id="toolsChart"></canvas>
+								</div>
+							</div>
+							<div class="tools-stats" id="toolsStats"></div>
+						</div>
+					</section>
+
+					<section class="insights-section" id="insights-section">
+						<div class="section-header">
+							<h2><i class="fas fa-lightbulb"></i> Insights e Observações</h2>
+						</div>
+						<div class="insight-card">
+							<h3>Principais Benefícios do Uso de IA na Educação:</h3>
+							<div class="insight-content" id="principiosInsight"></div>
+						</div>
+					</section>
+
+					<section class="timeline-section" id="timeline-section">
+						<div class="section-header">
+							<h2><i class="fas fa-calendar-alt"></i> Timeline de Respostas</h2>
+						</div>
+						<div class="chart-card">
+							<div class="chart-container large">
+								<canvas id="timelineChart"></canvas>
+							</div>
+						</div>
+					</section>
+
+					<section class="table-section" id="table-section">
+						<div class="section-header">
+							<h2><i class="fas fa-table"></i> Dados Completos</h2>
+						</div>
+						<div class="table-card">
+							<div class="table-container">
+								<table id="dataTable"></table>
+							</div>
+						</div>
+					</section>
+				</div>
+
+				<div id="error" class="error-container" style="display: none">
+					<div class="error-content">
+						<i class="fas fa-exclamation-triangle"></i>
+						<h3>Erro ao carregar dados</h3>
+						<p>Verifique a URL do Google Apps Script e as permissões.</p>
+						<button onclick="fetchData()" class="retry-btn">
+							<i class="fas fa-redo"></i> Tentar Novamente
+						</button>
+					</div>
+				</div>
+			</main>
+		</div>
+
+		<script src="script.js"></script>
+	</body>
+</html>
