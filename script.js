@@ -27,8 +27,6 @@ const CHART_COLORS = [
 
 let globalData = [];
 
-// ATENÇÃO: Mapeamento de colunas atualizado para CORRESPONDER EXATAMENTE aos nomes da sua NOVA planilha.
-// Copiei e colei os nomes fornecidos na sua lista para garantir a precisão.
 const COLUMN_MAPPING = {
 	timestamp: "Carimbo de data/hora",
 	conhecimento: "Você já ouviu falar sobre Inteligência Artificial (IA)? ",
@@ -36,10 +34,9 @@ const COLUMN_MAPPING = {
 	ferramentas: "Quais ferramentas de IA você já utilizou? (Marque todas as que se aplicam)",
 	confianca: "Você acredita que o uso de IA melhora seu aprendizado/trabalho escolar?",
 	principios: "Quais são os principais benefícios que você vê no uso de IA na educação? ",
-    frequencia: "Quantas vezes por semana você usa IA para estudar ou realizar tarefas como  escola/estudo/trabalho?", // Nome atualizado da frequência
-    tipo_tarefa: "Em que tipo de tarefa escolar você usa mais a IA?" // Nome atualizado do tipo de tarefa
+	frequencia: "Quantas vezes por semana você usa IA para estudar ou realizar tarefas como  escola/estudo/trabalho?",
+	tipo_tarefa: "Em que tipo de tarefa escolar você usa mais a IA?",
 };
-
 
 async function fetchData() {
 	try {
@@ -142,15 +139,12 @@ function displayStats(data) {
 		.join("");
 }
 
-// Função de cálculo de completude melhorada para usar o COLUMN_MAPPING
 function calculateCompletionRate(data) {
 	if (data.length === 0) return 0;
 
-	// Obtenha os nomes de colunas do COLUMN_MAPPING que representam perguntas
-	// Filtra 'timestamp' porque não é uma "resposta" a uma pergunta do formulário
 	const questionHeaders = Object.keys(COLUMN_MAPPING)
-                                .filter(key => key !== 'timestamp')
-                                .map(key => COLUMN_MAPPING[key]);
+		.filter((key) => key !== "timestamp")
+		.map((key) => COLUMN_MAPPING[key]);
 
 	const totalQuestionFields = questionHeaders.length;
 
@@ -159,21 +153,19 @@ function calculateCompletionRate(data) {
 	data.forEach((row) => {
 		let filledQuestionFields = 0;
 		questionHeaders.forEach((header) => {
-			const value = row[header]; // Acessa o valor usando o nome do cabeçalho
+			const value = row[header];
 			if (value !== null && value !== undefined && String(value).trim() !== "") {
 				filledQuestionFields++;
 			}
 		});
-        
-        // Consideramos completa se a maioria das perguntas foi respondida
-		if (filledQuestionFields >= totalQuestionFields * 0.9) { // Ajuste o limiar se necessário
+
+		if (filledQuestionFields >= totalQuestionFields * 0.9) {
 			completedResponsesCount++;
 		}
 	});
 
 	return Math.round((completedResponsesCount / data.length) * 100);
 }
-
 
 function countUniqueTools(data) {
 	const toolsSet = new Set();
@@ -193,77 +185,70 @@ function countUniqueTools(data) {
 
 function createCharts(data) {
 	if (data.length === 0) return;
-
-    // 'conhecimento' é categórico ("Sim"/"Não"), então usamos um gráfico de rosca
 	createCategoricalChart(data, COLUMN_MAPPING.conhecimento, "chart1");
-
-    // 'frequencia' é categórico ("3-4 vezes...", "Não uso IA"), então usamos um gráfico de rosca
-	createCategoricalChart(data, COLUMN_MAPPING.frequencia, "chart2");
-    
-    // 'horas' continua sendo uma escala numérica
+	createCategoricalChart(data, COLUMN_MAPPING.frequencia, "chart2"),
 	createScaleChart(data, COLUMN_MAPPING.horas, "chart3", "stats3");
-
-    // 'confianca' continua sendo uma escala numérica
 	createScaleChart(data, COLUMN_MAPPING.confianca, "chart4", "stats4");
 }
 
-// Função para criar gráficos para dados categóricos (texto)
 function createCategoricalChart(data, columnName, chartId) {
-    const ctx = document.getElementById(chartId);
+	const ctx = document.getElementById(chartId);
 	if (ctx && ctx.chart) {
 		ctx.chart.destroy();
 	}
 	if (!ctx) return;
 
-    const frequencies = {};
-    data.forEach(row => {
-        const value = String(row[columnName] || "Não respondido").trim();
-        if (value) {
-            frequencies[value] = (frequencies[value] || 0) + 1;
-        }
-    });
+	const frequencies = {};
+	data.forEach((row) => {
+		const value = String(row[columnName] || "Não respondido").trim();
+		if (value) {
+			frequencies[value] = (frequencies[value] || 0) + 1;
+		}
+	});
 
-    const labels = Object.keys(frequencies);
-    const counts = Object.values(frequencies);
+	const labels = Object.keys(frequencies);
+	const counts = Object.values(frequencies);
 
-    if (labels.length === 0) {
-        ctx.parentElement.innerHTML = '<p style="text-align: center; color: var(--gray-600); padding: 1rem;">Sem dados para este gráfico.</p>';
-        return;
-    }
+	if (labels.length === 0) {
+		ctx.parentElement.innerHTML =
+			'<p style="text-align: center; color: var(--gray-600); padding: 1rem;">Sem dados para este gráfico.</p>';
+		return;
+	}
 
-    ctx.chart = new Chart(ctx, {
-        type: "doughnut", // Mantenho doughnut para categóricos
-        data: {
-            labels: labels,
-            datasets: [{
-                data: counts,
-                backgroundColor: CHART_COLORS.slice(0, labels.length),
-                borderColor: '#ffffff',
-                borderWidth: 3,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: { padding: 20, usePointStyle: true },
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                            const percentage = ((context.raw / total) * 100).toFixed(1);
-                            return `${context.label}: ${context.raw} (${percentage}%)`;
-                        }
-                    }
-                }
-            }
-        }
-    });
+	ctx.chart = new Chart(ctx, {
+		type: "doughnut",
+		data: {
+			labels: labels,
+			datasets: [
+				{
+					data: counts,
+					backgroundColor: CHART_COLORS.slice(0, labels.length),
+					borderColor: "#ffffff",
+					borderWidth: 3,
+				},
+			],
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio: false,
+			plugins: {
+				legend: {
+					position: "bottom",
+					labels: { padding: 20, usePointStyle: true },
+				},
+				tooltip: {
+					callbacks: {
+						label: function (context) {
+							const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+							const percentage = ((context.raw / total) * 100).toFixed(1);
+							return `${context.label}: ${context.raw} (${percentage}%)`;
+						},
+					},
+				},
+			},
+		},
+	});
 }
-
 
 function createScaleChart(data, columnName, chartId, statsId) {
 	const ctx = document.getElementById(chartId);
@@ -434,7 +419,7 @@ function createToolsAnalysis(data) {
 					tooltip: {
 						callbacks: {
 							label: function (context) {
-                                const total = data.length;
+								const total = data.length;
 								const percentage = ((context.raw / total) * 100).toFixed(1);
 								return `${context.label}: ${context.raw} (${percentage}%)`;
 							},
@@ -496,9 +481,8 @@ function createTimeline(data) {
 	data.forEach((row) => {
 		const timestamp = row[COLUMN_MAPPING.timestamp];
 		if (timestamp) {
-            // Tratamento de data mais robusto para formatos 'dd/mm/yyyy ...'
-            const dateParts = timestamp.split(' ')[0].split('/');
-            const dateObj = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+			const dateParts = timestamp.split(" ")[0].split("/");
+			const dateObj = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
 			const date = dateObj.toLocaleDateString("pt-BR", {
 				year: "numeric",
 				month: "2-digit",
@@ -507,13 +491,12 @@ function createTimeline(data) {
 			dateGroups[date] = (dateGroups[date] || 0) + 1;
 		}
 	});
-    
-    // Ordenar as datas corretamente
+
 	const dates = Object.keys(dateGroups).sort((a, b) => {
-        const [dayA, monthA, yearA] = a.split('/');
-        const [dayB, monthB, yearB] = b.split('/');
-        return new Date(`${yearA}-${monthA}-${dayA}`) - new Date(`${yearB}-${monthB}-${dayB}`);
-    });
+		const [dayA, monthA, yearA] = a.split("/");
+		const [dayB, monthB, yearB] = b.split("/");
+		return new Date(`${yearA}-${monthA}-${dayA}`) - new Date(`${yearB}-${monthB}-${dayB}`);
+	});
 	const counts = dates.map((date) => dateGroups[date]);
 
 	ctx.chart = new Chart(ctx, {
@@ -549,7 +532,7 @@ function createTimeline(data) {
 					beginAtZero: true,
 					ticks: {
 						stepSize: 1,
-                        precision: 0 // Garante que o eixo Y não tenha casas decimais
+						precision: 0,
 					},
 				},
 				x: {
@@ -569,13 +552,11 @@ function displayTable(data) {
 		return;
 	}
 
-	// Pega os cabeçalhos da primeira linha de dados recebida do Apps Script
 	const headers = Object.keys(data[0]);
 
 	let tableHTML = "<thead><tr>";
 	headers.forEach((header) => {
-        // Encurta os cabeçalhos longos na tabela para melhor visualização
-        const shortHeader = header.length > 35 ? header.substring(0, 35) + "..." : header;
+		const shortHeader = header.length > 35 ? header.substring(0, 35) + "..." : header;
 		tableHTML += `<th title="${header}">${shortHeader}</th>`;
 	});
 	tableHTML += "</tr></thead><tbody>";
@@ -583,7 +564,7 @@ function displayTable(data) {
 	data.forEach((row, index) => {
 		tableHTML += `<tr>`;
 		headers.forEach((header) => {
-			const value = row[header] || ""; // Pega o valor usando o cabeçalho original
+			const value = row[header] || ""; 
 			const cleanValue = String(value).replace(/"/g, "");
 			const displayValue = cleanValue.length > 50 ? cleanValue.substring(0, 50) + "..." : cleanValue;
 			tableHTML += `<td title="${cleanValue.replace(/"/g, `"`)}">${displayValue}</td>`;
